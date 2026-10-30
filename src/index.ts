@@ -1,3 +1,4 @@
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -19,11 +20,24 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Allowed frontend origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://mohamed-afrideen.vercel.app',
+];
+
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked origin: ${origin}`));
+    }
+  },
   credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -40,12 +54,17 @@ app.use('/api/sections', sectionRoutes);
 
 // Initialize DB and start server
 const startServer = async () => {
-  await createTables();
-  
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-  });
+  try {
+    await createTables();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
 };
 
 startServer();
