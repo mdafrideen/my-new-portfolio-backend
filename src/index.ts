@@ -21,24 +21,37 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allowed frontend origins
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://mohamed-afrideen.vercel.app',
-];
-
-// Middleware
+// Middleware - Allow all Vercel domains, localhost, custom frontend URLs, or allow all origins with reflected credentials
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS blocked origin: ${origin}`));
-    }
-  },
-  credentials: true
-}));
+    // Allow requests with no origin (like mobile apps, curl, Postman, server-to-server)
+    if (!origin) return callback(null, true);
 
+    // Always allow localhost
+    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      return callback(null, true);
+    }
+
+    // Always allow any Vercel deployment (preview or production domains)
+    if (origin.endsWith('.vercel.app') || origin.includes('vercel.app')) {
+      return callback(null, true);
+    }
+
+    // If FRONTEND_URL is specified (can be comma-separated)
+    if (process.env.FRONTEND_URL) {
+      const allowed = process.env.FRONTEND_URL.split(',').map(u => u.trim());
+      if (allowed.includes(origin)) {
+        return callback(null, true);
+      }
+    }
+
+    // Allow and reflect any origin with credentials so CORS is never blocked
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -57,17 +70,12 @@ app.use('/api/videos', videoRoutes);
 
 // Initialize DB and start server
 const startServer = async () => {
-  try {
-    await createTables();
-
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-    });
-  } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
-  }
+  await createTables();
+  
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+  });
 };
 
 startServer();
