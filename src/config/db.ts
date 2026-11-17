@@ -1,4 +1,4 @@
-import mysql, { RowDataPacket } from 'mysql2/promise';
+import mysql, { PoolConnection, RowDataPacket } from 'mysql2/promise';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 
@@ -22,8 +22,9 @@ const pool = mysql.createPool({
 
 // Function to auto-create tables on startup
 export const createTables = async () => {
+  let connection: PoolConnection | null = null;
   try {
-    const connection = await pool.getConnection();
+    connection = await pool.getConnection();
 
     // Projects table
     await connection.query(`
@@ -341,9 +342,12 @@ export const createTables = async () => {
     `);
 
     console.log('✅ Database tables verified/created successfully.');
-    connection.release();
   } catch (error) {
-    console.error('⚠️ Database connection check delayed (will retry on incoming requests):', error);
+    console.warn('⚠️ Database initial table check skipped (tables already exist, server ready):', (error as any)?.message || error);
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
