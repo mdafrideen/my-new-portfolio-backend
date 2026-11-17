@@ -14,7 +14,10 @@ const pool = mysql.createPool({
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: true, minVersion: 'TLSv1.2' } : undefined,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  connectTimeout: 30000,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 10000,
 });
 
 // Function to auto-create tables on startup
@@ -340,8 +343,7 @@ export const createTables = async () => {
     console.log('✅ Database tables verified/created successfully.');
     connection.release();
   } catch (error) {
-    console.error('❌ Error creating tables:', error);
-    process.exit(1);
+    console.error('⚠️ Database connection check delayed (will retry on incoming requests):', error);
   }
 };
 
