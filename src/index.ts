@@ -70,7 +70,11 @@ app.use('/api/videos', videoRoutes);
 
 // Initialize DB and start server
 const startServer = async () => {
-  await createTables();
+  try {
+    await createTables();
+  } catch (err) {
+    console.warn('⚠️ Table initialization warning:', err);
+  }
   
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
