@@ -1,34 +1,12 @@
-<<<<<<< HEAD
-import { Router, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-=======
-
 import { Router, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { RowDataPacket } from 'mysql2/promise';
-
 import pool from '../config/db';
->>>>>>> f8907378845f3b319470419db093cb515a756706
 import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
-<<<<<<< HEAD
-router.post('/login', (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-    const token = jwt.sign({ email }, process.env.JWT_SECRET as string, { expiresIn: '1d' });
-    return res.json({ token, message: 'Login successful' });
-  }
-
-  return res.status(401).json({ message: 'Invalid credentials' });
-});
-
-router.get('/verify', authenticate, (req: Request, res: Response) => {
-  res.json({ message: 'Token is valid', user: (req as any).user });
-=======
 // Admin Login
 router.post('/login', async (req: Request, res: Response) => {
   try {
@@ -104,7 +82,6 @@ router.get('/verify', authenticate, (req: Request, res: Response) => {
     message: 'Token is valid',
     user: (req as any).user
   });
->>>>>>> f8907378845f3b319470419db093cb515a756706
 });
 
 export default router;

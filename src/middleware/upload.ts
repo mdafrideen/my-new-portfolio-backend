@@ -6,16 +6,11 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'portfolio',
-<<<<<<< HEAD
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'svg'],
-=======
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
->>>>>>> f8907378845f3b319470419db093cb515a756706
   } as any,
 });
 
 const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-<<<<<<< HEAD
   const allowedMimeTypes = [
     'image/jpeg',
     'image/png',
@@ -27,20 +22,12 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
     cb(null, true);
   } else {
     cb(new Error('Invalid file type. Only JPEG, PNG, WebP, and SVG are allowed.'));
-=======
-  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-  if (allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Invalid file type. Only JPEG, PNG, and WebP are allowed.'));
->>>>>>> f8907378845f3b319470419db093cb515a756706
   }
 };
 
 export const upload = multer({
   storage: storage,
   limits: {
-<<<<<<< HEAD
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: fileFilter,
@@ -81,9 +68,4 @@ export const uploadDocument = multer({
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
   fileFilter: documentFileFilter,
-=======
-    fileSize: 5 * 1024 * 1024 // 5MB limit
-  },
-  fileFilter: fileFilter
->>>>>>> f8907378845f3b319470419db093cb515a756706
 });
