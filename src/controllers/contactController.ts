@@ -1,7 +1,19 @@
 import { Request, Response } from 'express';
 import pool from '../config/db';
 import { ResultSetHeader } from 'mysql2';
+<<<<<<< HEAD
 import { sendProjectInquiryEmail } from '../utils/mailer';
+=======
+import nodemailer from 'nodemailer';
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+>>>>>>> f8907378845f3b319470419db093cb515a756706
 
 export const submitContactForm = async (req: Request, res: Response) => {
   try {
@@ -17,10 +29,27 @@ export const submitContactForm = async (req: Request, res: Response) => {
       [name, email, message]
     );
 
+<<<<<<< HEAD
     // Send email alert to admin asynchronously
     sendProjectInquiryEmail({ name, email, message }).catch((mailError) => {
       console.error('Failed to send email alert:', mailError);
     });
+=======
+    // Send email alert to admin
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: process.env.ADMIN_EMAIL,
+      subject: `New Portfolio Message from ${name}`,
+      text: `You have a new message from your portfolio website.\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (mailError) {
+      console.error('Failed to send email alert:', mailError);
+      // We still return success to the user since it was saved to DB
+    }
+>>>>>>> f8907378845f3b319470419db093cb515a756706
 
     res.status(201).json({ message: 'Message sent successfully', id: result.insertId });
   } catch (error) {

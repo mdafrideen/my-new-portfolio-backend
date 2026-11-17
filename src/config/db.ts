@@ -202,6 +202,7 @@ export const createTables = async () => {
         whatsapp VARCHAR(500) DEFAULT '',
         behance VARCHAR(500) DEFAULT '',
         dribbble VARCHAR(500) DEFAULT '',
+<<<<<<< HEAD
         resume_url VARCHAR(500) DEFAULT '',
         smtp_host VARCHAR(255) DEFAULT '',
         smtp_port VARCHAR(50) DEFAULT '587',
@@ -210,10 +211,13 @@ export const createTables = async () => {
         smtp_pass VARCHAR(255) DEFAULT '',
         smtp_from_email VARCHAR(255) DEFAULT '',
         notification_email VARCHAR(255) DEFAULT '',
+=======
+>>>>>>> f8907378845f3b319470419db093cb515a756706
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `);
 
+<<<<<<< HEAD
     // Ensure resume_url & SMTP columns exist on existing database
     const settingsMigrations = [
       "ALTER TABLE site_settings ADD COLUMN resume_url VARCHAR(500) DEFAULT ''",
@@ -233,6 +237,8 @@ export const createTables = async () => {
       }
     }
 
+=======
+>>>>>>> f8907378845f3b319470419db093cb515a756706
     // Seed site settings if none exists
     const [settingsRows] = await connection.query<RowDataPacket[]>('SELECT COUNT(*) as count FROM site_settings');
     if (settingsRows[0].count === 0) {
@@ -308,6 +314,7 @@ export const createTables = async () => {
         ('global.contact', 'Contact footer (all pages)', 'Global', TRUE, FALSE, 13)
     `);
 
+<<<<<<< HEAD
     // Graphic Works table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS graphic_works (
@@ -337,6 +344,8 @@ export const createTables = async () => {
       )
     `);
 
+=======
+>>>>>>> f8907378845f3b319470419db093cb515a756706
     console.log('✅ Database tables verified/created successfully.');
     connection.release();
   } catch (error) {

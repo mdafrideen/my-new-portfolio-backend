@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
 import pool from '../config/db';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+<<<<<<< HEAD
 import https from 'https';
 import http from 'http';
 import { getEffectiveSmtpConfig, createSmtpTransporter } from '../utils/mailer';
+=======
+>>>>>>> f8907378845f3b319470419db093cb515a756706
 
 export const getSiteSettings = async (req: Request, res: Response) => {
   try {
@@ -25,6 +28,7 @@ export const getSiteSettings = async (req: Request, res: Response) => {
         github: '',
         whatsapp: '',
         behance: '',
+<<<<<<< HEAD
         dribbble: '',
         resume_url: '',
         smtp_host: '',
@@ -34,6 +38,9 @@ export const getSiteSettings = async (req: Request, res: Response) => {
         smtp_pass: '',
         smtp_from_email: '',
         notification_email: '',
+=======
+        dribbble: ''
+>>>>>>> f8907378845f3b319470419db093cb515a756706
       });
     }
     res.json(rows[0]);
@@ -59,6 +66,7 @@ export const updateSiteSettings = async (req: Request, res: Response) => {
       github,
       whatsapp,
       behance,
+<<<<<<< HEAD
       dribbble,
       resume_url,
       smtp_host,
@@ -87,6 +95,18 @@ export const updateSiteSettings = async (req: Request, res: Response) => {
           badge_text, meta_title, meta_description, instagram, linkedin, github, whatsapp, behance, dribbble, resume_url,
           smtp_host, smtp_port, smtp_secure, smtp_user, smtp_pass, smtp_from_email, notification_email
         ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+=======
+      dribbble
+    } = req.body;
+
+    const [rows] = await pool.query<RowDataPacket[]>('SELECT COUNT(*) as count FROM site_settings WHERE id = 1');
+    if (rows[0].count === 0) {
+      await pool.query<ResultSetHeader>(
+        `INSERT INTO site_settings (
+          id, owner_name, first_name, last_name, brand_text, location, contact_email,
+          badge_text, meta_title, meta_description, instagram, linkedin, github, whatsapp, behance, dribbble
+        ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+>>>>>>> f8907378845f3b319470419db093cb515a756706
         [
           owner_name ?? '',
           first_name ?? '',
@@ -102,6 +122,7 @@ export const updateSiteSettings = async (req: Request, res: Response) => {
           github ?? '',
           whatsapp ?? '',
           behance ?? '',
+<<<<<<< HEAD
           dribbble ?? '',
           finalResumeUrl ?? '',
           smtp_host ?? '',
@@ -111,6 +132,9 @@ export const updateSiteSettings = async (req: Request, res: Response) => {
           smtp_pass ?? '',
           smtp_from_email ?? '',
           notification_email ?? '',
+=======
+          dribbble ?? ''
+>>>>>>> f8907378845f3b319470419db093cb515a756706
         ]
       );
     } else {
@@ -130,6 +154,7 @@ export const updateSiteSettings = async (req: Request, res: Response) => {
           github = ?,
           whatsapp = ?,
           behance = ?,
+<<<<<<< HEAD
           dribbble = ?,
           resume_url = ?,
           smtp_host = ?,
@@ -164,6 +189,26 @@ export const updateSiteSettings = async (req: Request, res: Response) => {
           smtp_pass !== undefined ? smtp_pass : existing.smtp_pass ?? '',
           smtp_from_email !== undefined ? smtp_from_email : existing.smtp_from_email ?? '',
           notification_email !== undefined ? notification_email : existing.notification_email ?? '',
+=======
+          dribbble = ?
+        WHERE id = 1`,
+        [
+          owner_name ?? '',
+          first_name ?? '',
+          last_name ?? '',
+          brand_text ?? '',
+          location ?? '',
+          contact_email ?? '',
+          badge_text ?? '',
+          meta_title ?? '',
+          meta_description ?? '',
+          instagram ?? '',
+          linkedin ?? '',
+          github ?? '',
+          whatsapp ?? '',
+          behance ?? '',
+          dribbble ?? ''
+>>>>>>> f8907378845f3b319470419db093cb515a756706
         ]
       );
     }
@@ -171,6 +216,7 @@ export const updateSiteSettings = async (req: Request, res: Response) => {
     const [updated] = await pool.query<RowDataPacket[]>('SELECT * FROM site_settings WHERE id = 1');
     res.json({ message: 'Site settings updated successfully', settings: updated[0] });
   } catch (error) {
+<<<<<<< HEAD
     console.error('Error updating site settings:', error);
     res.status(500).json({ message: 'Error updating site settings', error });
   }
@@ -255,3 +301,8 @@ export const downloadResume = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error downloading resume', error });
   }
 };
+=======
+    res.status(500).json({ message: 'Error updating site settings', error });
+  }
+};
+>>>>>>> f8907378845f3b319470419db093cb515a756706
