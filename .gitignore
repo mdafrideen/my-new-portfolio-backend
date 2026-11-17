@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+
+uploads/
+backend.zip
+16-09-backend-evening.zip
+16-09.zip
+16-09.zip
+23-09-backend.zip
+16-10-backend.zip
+17-10-backend.zip
+28-10-backend.zip
