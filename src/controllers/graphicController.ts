@@ -39,7 +39,8 @@ const getImageUrl = (file: Express.Multer.File | undefined): string | null => {
 export const getAllGraphicWorks = async (req: Request, res: Response) => {
   try {
     const [rows] = await pool.query<RowDataPacket[]>(
-      'SELECT * FROM graphic_works ORDER BY sort_order ASC, created_at DESC'
+      // Ithula query ah 'COALESCE' vachu maathi iruken. Ithu sort_order NULL ah irundhalum, id vachu sort pannum.
+      'SELECT * FROM graphic_works ORDER BY COALESCE(sort_order, 0) ASC, id ASC'
     );
     const works = rows.map((work) => ({
       ...work,
