@@ -32,8 +32,9 @@ export const getEffectiveSmtpConfig = async (): Promise<SmtpConfig | null> => {
     const host = s.smtp_host?.trim() || process.env.SMTP_HOST?.trim() || (user.includes('@gmail.com') ? 'smtp.gmail.com' : 'smtp.gmail.com');
     // If Gmail, remove spaces from 16-char App Password (e.g. 'iypb elwo rbom elbu' -> 'iypbelworbomelbu')
     const pass = (user.includes('@gmail.com') || host.includes('gmail')) ? rawPass.replace(/\s+/g, '') : rawPass;
-    const port = Number(s.smtp_port) || Number(process.env.SMTP_PORT) || 587;
-    const secure = s.smtp_secure !== undefined ? Boolean(s.smtp_secure) : (port === 465 || process.env.SMTP_SECURE === 'true');
+    const isGmail = host === 'smtp.gmail.com' || user.includes('@gmail.com');
+    const port = Number(s.smtp_port) || Number(process.env.SMTP_PORT) || (isGmail ? 465 : 587);
+    const secure = isGmail || port === 465 || (s.smtp_secure !== undefined ? Boolean(s.smtp_secure) : (process.env.SMTP_SECURE === 'true'));
     const from = s.smtp_from_email?.trim() || process.env.SMTP_FROM?.trim() || user;
     const to = s.notification_email?.trim() || process.env.ADMIN_NOTIFICATION_EMAIL?.trim() || process.env.ADMIN_EMAIL?.trim() || s.contact_email?.trim() || user;
 
@@ -60,7 +61,9 @@ export const createSmtpTransporter = (config: SmtpConfig) => {
 
   if (isGmail) {
     return nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true, // Port 465 with direct SSL works on Render/AWS/Cloud hosts!
       auth: {
         user: config.user,
         pass: config.pass,
@@ -68,13 +71,18 @@ export const createSmtpTransporter = (config: SmtpConfig) => {
       tls: {
         rejectUnauthorized: false,
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     });
   }
 
+  const isPort465 = Number(config.port) === 465;
+
   return nodemailer.createTransport({
-    host: config.host,
-    port: config.port,
-    secure: config.secure, // true for 465, false for 587 / other
+    host: config.host || 'smtp.gmail.com',
+    port: config.port || (isPort465 ? 465 : 587),
+    secure: isPort465 || config.secure,
     auth: {
       user: config.user,
       pass: config.pass,
@@ -82,6 +90,9 @@ export const createSmtpTransporter = (config: SmtpConfig) => {
     tls: {
       rejectUnauthorized: false,
     },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   });
 };
 
